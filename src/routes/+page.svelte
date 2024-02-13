@@ -2,6 +2,7 @@
 	import { getExpensesStore } from '$lib/expensesStore.svelte';
 	import { enhance } from '$app/forms';
 
+	// here is working fine, I can get the store and use it
 	const expensesStore = getExpensesStore();
 </script>
 

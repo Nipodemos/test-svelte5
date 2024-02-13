@@ -8,6 +8,8 @@
 		children: any;
 	}
 	let { children, data } = $props<Props>();
+
+	//initialize the store with the data from the server
 	createExpensesStore(data.expenses);
 </script>
 
