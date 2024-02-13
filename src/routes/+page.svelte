@@ -1,40 +1,31 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms';
-	import SuperDebug from 'sveltekit-superforms';
+	import { getExpensesStore } from '$lib/expensesStore.svelte';
+	import { enhance } from '$app/forms';
 
-	export let data;
-
-	// Client API:
-	const { form, errors, constraints, enhance } = superForm(data.form);
+	const expensesStore = getExpensesStore();
 </script>
 
-<SuperDebug data={$form} />
-<form method="POST" use:enhance style="display: flex">
-	<label for="name">Name</label>
-	<input
-		type="text"
-		name="name"
-		aria-invalid={$errors.name ? 'true' : undefined}
-		bind:value={$form.name}
-		{...$constraints.name}
-	/>
-	{#if $errors.name}<span class="invalid">{$errors.name}</span>{/if}
+<h1>Expenses</h1>
 
-	<label for="email">E-mail</label>
-	<input
-		type="email"
-		name="email"
-		aria-invalid={$errors.email ? 'true' : undefined}
-		bind:value={$form.email}
-		{...$constraints.email}
-	/>
-	{#if $errors.email}<span class="invalid">{$errors.email}</span>{/if}
-
-	<div><button>Submit</button></div>
+<form method="POST" use:enhance>
+	<input type="text" name="description" placeholder="Description" />
+	<input type="number" name="amount" placeholder="Amount" />
+	<input type="submit" value="Add Expense" />
 </form>
 
-<style>
-	.invalid {
-		color: red;
-	}
-</style>
+<table style="border: 1px solid red;">
+	<thead>
+		<tr>
+			<th>Description</th>
+			<th>Amount</th>
+		</tr>
+	</thead>
+	<tbody>
+		{#each expensesStore.expenses as expense}
+			<tr>
+				<td>{expense.description}</td>
+				<td>{expense.amount}</td>
+			</tr>
+		{/each}
+	</tbody>
+</table>

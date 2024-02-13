@@ -1,34 +1,22 @@
-import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
-import { z } from 'zod';
-import { fail } from '@sveltejs/kit';
-
-// Define outside the load function so the adapter can be cached
-const schema = z.object({
-	name: z.string().min(5),
-	email: z.string().email('nipodemos@test.com')
-});
-
-export const load = async () => {
-	const form = await superValidate(zod(schema));
-
-	// Always return { form } in load functions
-	return { form };
-};
+import { getExpensesStore } from '$lib/expensesStore.svelte.js';
+import { fail, type Actions } from '@sveltejs/kit';
 
 export const actions = {
 	default: async ({ request }) => {
-		const form = await superValidate(request, zod(schema));
-		console.log(form);
+		const formData = await request.formData();
+		const amount = Number(formData.get('amount'));
+		const description = String(formData.get('description'));
 
-		if (!form.valid) {
-			// Again, return { form } and things will just work.
-			return fail(400, { form });
+		if (!amount || !description) {
+			return fail(400, { message: 'Invalid amount or description' });
 		}
 
-		// TODO: Do something with the validated form.data
+		console.log({ amount, description });
 
-		// Yep, return { form } here too
-		return { form };
+		const expensesStore = getExpensesStore();
+		expensesStore.addExpense({ amount, description });
+		return {
+			success: true
+		};
 	}
-};
+} satisfies Actions;
